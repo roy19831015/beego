@@ -16,15 +16,12 @@ package web
 
 var indexTpl = `
 {{define "content"}}
-<h1>Beego Admin Dashboard</h1>
+<h1>HBCACSMP服务器运行状况仪表板</h1>
 <p>
-For detail usage please check our document:
+详细信息请参考我们的文档:
 </p>
 <p>
-<a target="_blank" href="http://beego.me/docs/module/admin.md">Toolbox</a>
-</p>
-<p>
-<a target="_blank" href="http://beego.me/docs/advantage/monitor.md">Live Monitor</a>
+<a target="_blank" href="https://www.hbca.org.cn/">湖北CA</a>
 </p>
 {{.Content}}
 {{end}}`
@@ -47,7 +44,7 @@ var gcAjaxTpl = `
 	app.$el = $('#content');
 	app.getGc = function() {
 		var that = this;
-		$.ajax("/prof?command=gc%20summary&format=json").done(function(data) {
+		$.ajax("/admin/prof?command=gc%20summary&format=json").done(function(data) {
 			that.$el.append($('<p>' + data.Content + '</p>'));
 		});
 	};
@@ -62,7 +59,7 @@ var gcAjaxTpl = `
 `
 
 var qpsTpl = `{{define "content"}}
-<h1>Requests statistics</h1>
+<h1>请求统计</h1>
 <table class="table table-striped table-hover ">
 	<thead>
 	<tr>
@@ -94,7 +91,7 @@ var qpsTpl = `{{define "content"}}
 
 var configTpl = `
 {{define "content"}}
-<h1>Configurations</h1>
+<h1>配置</h1>
 <pre>
 {{range $index, $elem := .Content}}
 {{$index}}={{$elem}}
@@ -187,7 +184,7 @@ bg-warning
 	</td>
 	{{end}}
 	<td>
-	<a class="btn btn-primary btn-sm" href="/task?taskname={{index $slice 0}}">Run</a>
+	<a class="btn btn-primary btn-sm" href="/admin/task?taskname={{index $slice 0}}">立即执行</a>
 	</td>
 </tr>
 {{end}}
@@ -249,7 +246,7 @@ var dashboardTpl = `
 
 <title>
 
-Welcome to Beego Admin Dashboard
+欢迎使用HBCACSMP服务器运行状况仪表板
 
 </title>
 
@@ -277,57 +274,57 @@ ul.nav li.dropdown:hover > ul.dropdown-menu {
 <div class="container">
 <div class="navbar-header">
 <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
-<span class="sr-only">Toggle navigation</span>
+<span class="sr-only">开关导航</span>
 <span class="icon-bar"></span>
 <span class="icon-bar"></span>
 <span class="icon-bar"></span>
 </button>
 
-<a href="/">
-<img id="logo" src="data:image/png;base64,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"/>
+<a href="/admin/">
+<img id="logo" src="data:image/png;base64,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"/>
 </a>
 
 </div>
 <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
 <ul class="nav navbar-nav">
 <li>
-<a href="/qps">
-Requests statistics
+<a href="/admin/qps">
+请求统计
 </a>
 </li>
 <li>
 
 <li class="dropdown">
-<a href="#" class="dropdown-toggle disabled" data-toggle="dropdown">Performance profiling<span class="caret"></span></a>
+<a href="#" class="dropdown-toggle disabled" data-toggle="dropdown">性能状况<span class="caret"></span></a>
 <ul class="dropdown-menu" role="menu">
 
-<li><a href="/prof?command=lookup goroutine">lookup goroutine</a></li>
-<li><a href="/prof?command=lookup heap">lookup heap</a></li>
-<li><a href="/prof?command=lookup threadcreate">lookup threadcreate</a></li>
-<li><a href="/prof?command=lookup block">lookup block</a></li>
-<li><a href="/prof?command=get cpuprof">get cpuprof</a></li>
-<li><a href="/prof?command=get memprof">get memprof</a></li>
-<li><a href="/prof?command=gc summary">gc summary</a></li>
+<li><a href="/admin/prof?command=lookup goroutine">查看协程情况</a></li>
+<li><a href="/admin/prof?command=lookup heap">查看堆栈情况</a></li>
+<li><a href="/admin/prof?command=lookup threadcreate">查看线程创建</a></li>
+<li><a href="/admin/prof?command=lookup block">查看块情况</a></li>
+<li><a href="/admin/prof?command=get cpuprof">生成CPU分析文件</a></li>
+<li><a href="/admin/prof?command=get memprof">生成内存分析文件</a></li>
+<li><a href="/admin/prof?command=gc summary">内存回收统计</a></li>
 
 </ul>
 </li>
 
 <li>
-<a href="/healthcheck">
-Healthcheck
+<a href="/admin/healthcheck">
+健康检查
 </a>
 </li>
 
 <li>
-<a href="/task" class="dropdown-toggle disabled" data-toggle="dropdown">Tasks</a>
+<a href="/admin/task" class="dropdown-toggle disabled" data-toggle="dropdown">计划任务情况</a>
 </li>
 
 <li class="dropdown">
-<a href="#" class="dropdown-toggle disabled" data-toggle="dropdown">Config Status<span class="caret"></span></a>
+<a href="#" class="dropdown-toggle disabled" data-toggle="dropdown">配置情况<span class="caret"></span></a>
 <ul class="dropdown-menu" role="menu">
-<li><a href="/listconf?command=conf">Configs</a></li>
-<li><a href="/listconf?command=router">Routers</a></li>
-<li><a href="/listconf?command=filter">Filters</a></li>
+<li><a href="/admin/listconf?command=conf">所有配置</a></li>
+<li><a href="/admin/listconf?command=router">所有路由</a></li>
+<li><a href="/admin/listconf?command=filter">所有过滤器</a></li>
 </ul>
 </li>
 </ul>
