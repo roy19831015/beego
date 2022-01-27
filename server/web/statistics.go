@@ -89,7 +89,7 @@ func (m *URLMap) GetMap() map[string]interface{} {
 	m.lock.RLock()
 	defer m.lock.RUnlock()
 
-	var fields = []string{"requestUrl", "method", "times", "used", "max used", "min used", "avg used"}
+	var fields = []string{"请求地址", "方法", "次数", "共耗时", "最长耗时", "最小耗时", "平均耗时"}
 
 	var resultLists [][]string
 	content := make(map[string]interface{})
