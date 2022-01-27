@@ -44,8 +44,6 @@ func (c *adminController) checkLogin() {
 		//登录页面地址
 		urlstr := "/admin/login"
 		//登录成功后返回的址为当前
-		returnURL := c.Ctx.Request.URL.String()
-		//如果ajax请求则返回相应的错码和跳转的地址
 		c.Redirect(urlstr, 302)
 		c.StopRun()
 	}
