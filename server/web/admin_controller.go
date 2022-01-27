@@ -93,7 +93,7 @@ func (a *adminController) TaskStatus() {
 		if res.IsSuccess() {
 
 			data["Message"] = []string{"success",
-				template.HTMLEscapeString(fmt.Sprintf("%s run success,Now the Status is <br>%s",
+				template.HTMLEscapeString(fmt.Sprintf("%s 执行成功，目前状态为 %s",
 					taskname, res.Content.(string)))}
 
 		} else {
@@ -105,17 +105,17 @@ func (a *adminController) TaskStatus() {
 	content := make(M)
 	resultList := admin.GetCommand("task", "list").Execute().Content.([][]string)
 	var fields = []string{
-		"Task Name",
-		"Task Spec",
-		"Task Status",
-		"Last Time",
-		"",
+		"任务名称",
+		"任务周期",
+		"任务状态",
+		"上次执行时间",
+		"操作",
 	}
 
 	content["Fields"] = fields
 	content["Data"] = resultList
 	data["Content"] = content
-	data["Title"] = "Tasks"
+	data["Title"] = "计划任务"
 	writeTemplate(rw, data, tasksTpl, defaultScriptsTpl)
 }
 
@@ -137,7 +137,7 @@ func heathCheck(rw http.ResponseWriter, r *http.Request) {
 		data       = make(map[interface{}]interface{})
 		resultList = new([][]string)
 		content    = M{
-			"Fields": []string{"Name", "Message", "Status"},
+			"Fields": []string{"名称", "消息", "状态"},
 		}
 	)
 
@@ -176,7 +176,7 @@ func heathCheck(rw http.ResponseWriter, r *http.Request) {
 
 	content["Data"] = resultList
 	data["Content"] = content
-	data["Title"] = "Health Check"
+	data["Title"] = "健康检查"
 
 	writeTemplate(rw, data, healthCheckTpl, defaultScriptsTpl)
 }
@@ -208,7 +208,7 @@ func (a *adminController) ListConf() {
 	r.ParseForm()
 	command := r.Form.Get("command")
 	if command == "" {
-		rw.Write([]byte("command not support"))
+		rw.Write([]byte("不支持的命令"))
 		return
 	}
 
@@ -230,19 +230,19 @@ func (a *adminController) ListConf() {
 	case "router":
 		content := BeeApp.PrintTree()
 		content["Fields"] = []string{
-			"Router Pattern",
-			"Methods",
-			"Controller",
+			"路由路径",
+			"方法",
+			"控制器",
 		}
 		data["Content"] = content
-		data["Title"] = "Routers"
+		data["Title"] = "路由"
 		writeTemplate(rw, data, routerAndFilterTpl, defaultScriptsTpl)
 	case "filter":
 		var (
 			content = M{
 				"Fields": []string{
-					"Router Pattern",
-					"Filter Function",
+					"路由路径",
+					"过滤器方法",
 				},
 			}
 		)
@@ -258,10 +258,10 @@ func (a *adminController) ListConf() {
 		content["Methods"] = filterTypes
 
 		data["Content"] = content
-		data["Title"] = "Filters"
+		data["Title"] = "过滤器"
 		writeTemplate(rw, data, routerAndFilterTpl, defaultScriptsTpl)
 	default:
-		rw.Write([]byte("command not support"))
+		rw.Write([]byte("不支持的命令"))
 	}
 }
 
