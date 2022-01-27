@@ -35,12 +35,8 @@ var loginTpl = `
             <div style="margin-top: 16px">
                 <input type="password"
                        autocomplete="off" placeholder="运维密码" name="password" required maxlength="32"/>
+				<button type="submit" class="enter-btn" >登录</button>
             </div>
-        </div>
- 
-        <!--登入按钮-->
-        <div style="text-align: center">
-            <button type="submit" class="enter-btn" >登录</button>
         </div>
 </form>
 
