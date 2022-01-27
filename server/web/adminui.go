@@ -26,6 +26,31 @@ var indexTpl = `
 {{.Content}}
 {{end}}`
 
+var loginTpl = `
+{{define "content"}}
+<h1>HBCACSMP服务器运行状况仪表板-登陆</h1>
+<p>
+<form class="login-form" method="post" novalidate url="/admin/login">
+        <div class="input-content">
+            <div style="margin-top: 16px">
+                <input type="password"
+                       autocomplete="off" placeholder="运维密码" name="password" required maxlength="32"/>
+            </div>
+        </div>
+ 
+        <!--登入按钮-->
+        <div style="text-align: center">
+            <button type="submit" class="enter-btn" >登录</button>
+        </div>
+</form>
+
+</p>
+<p>
+<a target="_blank" href="https://www.hbca.org.cn/">湖北CA</a>
+</p>
+{{.Content}}
+{{end}}`
+
 var profillingTpl = `
 {{define "content"}}
 <h1>{{.Title}}</h1>

@@ -29,7 +29,31 @@ import (
 
 type adminController struct {
 	Controller
-	servers []*HttpServer
+	servers   []*HttpServer
+	curUserId string
+}
+
+func (c *adminController) Prepare()  {
+	if c.Ctx.RequestURI != "/admin/" {
+		c.checkLogin()
+	}
+}
+
+func (c *adminController) checkLogin() {
+	if c.curUserId != "admin" {
+		//登录页面地址
+		urlstr := "/admin/login"
+		//登录成功后返回的址为当前
+		returnURL := c.Ctx.Request.URL.String()
+		//如果ajax请求则返回相应的错码和跳转的地址
+		if c.Ctx.Input.IsAjax() {
+			//由于是ajax请求，因此地址是header里的Referer
+			returnURL := c.Ctx.Input.Refer()
+			c.jsonResult(enums.JRCode302, "请登录", urlstr+returnURL)
+		}
+		c.Redirect(urlstr+returnURL, 302)
+		c.StopRun()
+	}
 }
 
 func (a *adminController) registerHttpServer(svr *HttpServer) {
@@ -123,6 +147,12 @@ func (a *adminController) AdminIndex() {
 	// AdminIndex is the default http.Handler for admin module.
 	// it matches url pattern "/".
 	writeTemplate(a.Ctx.ResponseWriter, map[interface{}]interface{}{}, indexTpl, defaultScriptsTpl)
+}
+
+func (a *adminController) AdminLogin() {
+	// AdminIndex is the default http.Handler for admin module.
+	// it matches url pattern "/".
+	writeTemplate(a.Ctx.ResponseWriter, map[interface{}]interface{}{}, loginTpl, defaultScriptsTpl)
 }
 
 // Healthcheck is a http.Handler calling health checking and showing the result.
