@@ -102,6 +102,8 @@ func (admin *adminApp) Run() {
 	admin.HttpServer.Run(addr)
 }
 
+var AdminPassword string = "admin"
+
 func registerAdmin() error {
 	if BConfig.Listen.EnableAdmin {
 

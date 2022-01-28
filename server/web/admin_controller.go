@@ -156,7 +156,7 @@ func (a *adminController) AdminLogin() {
 }
 
 func (a *adminController) DoLogin(password string) {
-	if password != "hbcaadminyw2022" {
+	if password != AdminPassword {
 		a.StopRun()
 		return
 	}
