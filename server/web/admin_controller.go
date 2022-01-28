@@ -157,7 +157,7 @@ func (a *adminController) AdminLogin() {
 
 func (a *adminController) DoLogin(password string) {
 	if password != AdminPassword {
-		a.StopRun()
+		a.Redirect("/admin/login", 302)
 		return
 	}
 	a.SetSession("adminuser", "admin")
