@@ -117,7 +117,7 @@ func registerAdmin() error {
 		// keep in mind that all data should be html escaped to avoid XSS attack
 		beeAdminApp.Router("/admin/", c, "get:AdminIndex")
 		beeAdminApp.Router("/admin/login", c, "get:AdminLogin")
-		beeAdminApp.Router("/admin/login", c, "post:DoLogin")
+		beeAdminApp.Router("/admin/dologin", c, "*:DoLogin")
 		beeAdminApp.Router("/admin/qps", c, "get:QpsIndex")
 		beeAdminApp.Router("/admin/prof", c, "get:ProfIndex")
 		beeAdminApp.Router("/admin/healthcheck", c, "get:Healthcheck")
