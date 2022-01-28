@@ -29,7 +29,24 @@ import (
 
 type adminController struct {
 	Controller
-	servers []*HttpServer
+	servers   []*HttpServer
+	curUserId string
+}
+
+func (c *adminController) Prepare()  {
+	if c.Ctx.Request.RequestURI != "/admin/login" {
+		c.checkLogin()
+	}
+}
+
+func (c *adminController) checkLogin() {
+	if c.curUserId != "admin" {
+		//登录页面地址
+		urlstr := "/admin/login"
+		//登录成功后返回的址为当前
+		c.Redirect(urlstr, 302)
+		c.StopRun()
+	}
 }
 
 func (a *adminController) registerHttpServer(svr *HttpServer) {
@@ -79,6 +96,7 @@ func (a *adminController) PrometheusMetrics() {
 // TaskStatus is a http.Handler with running task status (task name, status and the last execution).
 // it's in "/task" pattern in admin module.
 func (a *adminController) TaskStatus() {
+
 	rw, req := a.Ctx.ResponseWriter, a.Ctx.Request
 
 	data := make(map[interface{}]interface{})
@@ -90,11 +108,11 @@ func (a *adminController) TaskStatus() {
 		cmd := admin.GetCommand("task", "run")
 		res := cmd.Execute(taskname)
 		if res.IsSuccess() {
-			data["Message"] = []string{
-				"success",
-				template.HTMLEscapeString(fmt.Sprintf("%s run success,Now the Status is <br>%s",
-					taskname, res.Content.(string))),
-			}
+
+			data["Message"] = []string{"success",
+				template.HTMLEscapeString(fmt.Sprintf("%s 执行成功，目前状态为 %s",
+					taskname, res.Content.(string)))}
+
 		} else {
 			data["Message"] = []string{"error", template.HTMLEscapeString(fmt.Sprintf("%s", res.Error))}
 		}
@@ -103,18 +121,18 @@ func (a *adminController) TaskStatus() {
 	// List Tasks
 	content := make(M)
 	resultList := admin.GetCommand("task", "list").Execute().Content.([][]string)
-	fields := []string{
-		"Task Name",
-		"Task Spec",
-		"Task Status",
-		"Last Time",
-		"",
+	var fields = []string{
+		"任务名称",
+		"任务周期",
+		"任务状态",
+		"上次执行时间",
+		"操作",
 	}
 
 	content["Fields"] = fields
 	content["Data"] = resultList
 	data["Content"] = content
-	data["Title"] = "Tasks"
+	data["Title"] = "计划任务"
 	writeTemplate(rw, data, tasksTpl, defaultScriptsTpl)
 }
 
@@ -122,6 +140,22 @@ func (a *adminController) AdminIndex() {
 	// AdminIndex is the default http.Handler for admin module.
 	// it matches url pattern "/".
 	writeTemplate(a.Ctx.ResponseWriter, map[interface{}]interface{}{}, indexTpl, defaultScriptsTpl)
+}
+
+func (a *adminController) AdminLogin() {
+	// AdminIndex is the default http.Handler for admin module.
+	// it matches url pattern "/".
+	writeTemplate(a.Ctx.ResponseWriter, map[interface{}]interface{}{}, loginTpl, defaultScriptsTpl)
+}
+
+func (a *adminController) DoLogin() {
+	a.Ctx.Request.ParseForm()
+	password := a.Ctx.Request.Form.Get("password")
+	if len(password) == 0 || password == "hbcaadminyw2022" {
+		a.StopRun()
+	}
+	a.curUserId = "admin"
+	a.Redirect("/admin/", 302)
 }
 
 // Healthcheck is a http.Handler calling health checking and showing the result.
@@ -136,7 +170,7 @@ func heathCheck(rw http.ResponseWriter, r *http.Request) {
 		data       = make(map[interface{}]interface{})
 		resultList = new([][]string)
 		content    = M{
-			"Fields": []string{"Name", "Message", "Status"},
+			"Fields": []string{"名称", "消息", "状态"},
 		}
 	)
 
@@ -175,7 +209,7 @@ func heathCheck(rw http.ResponseWriter, r *http.Request) {
 
 	content["Data"] = resultList
 	data["Content"] = content
-	data["Title"] = "Health Check"
+	data["Title"] = "健康检查"
 
 	writeTemplate(rw, data, healthCheckTpl, defaultScriptsTpl)
 }
@@ -207,7 +241,7 @@ func (a *adminController) ListConf() {
 	r.ParseForm()
 	command := r.Form.Get("command")
 	if command == "" {
-		rw.Write([]byte("command not support"))
+		rw.Write([]byte("不支持的命令"))
 		return
 	}
 
@@ -229,20 +263,22 @@ func (a *adminController) ListConf() {
 	case "router":
 		content := BeeApp.PrintTree()
 		content["Fields"] = []string{
-			"Router Pattern",
-			"Methods",
-			"Controller",
+			"路由路径",
+			"方法",
+			"控制器",
 		}
 		data["Content"] = content
-		data["Title"] = "Routers"
+		data["Title"] = "路由"
 		writeTemplate(rw, data, routerAndFilterTpl, defaultScriptsTpl)
 	case "filter":
-		content := M{
-			"Fields": []string{
-				"Router Pattern",
-				"Filter Function",
-			},
-		}
+		var (
+			content = M{
+				"Fields": []string{
+					"路由路径",
+					"过滤器方法",
+				},
+			}
+		)
 
 		filterTypeData := BeeApp.reportFilter()
 
@@ -255,10 +291,10 @@ func (a *adminController) ListConf() {
 		content["Methods"] = filterTypes
 
 		data["Content"] = content
-		data["Title"] = "Filters"
+		data["Title"] = "过滤器"
 		writeTemplate(rw, data, routerAndFilterTpl, defaultScriptsTpl)
 	default:
-		rw.Write([]byte("command not support"))
+		rw.Write([]byte("不支持的命令"))
 	}
 }
 
@@ -284,6 +320,7 @@ func buildHealthCheckResponseList(healthCheckResults *[][]string) []map[string]i
 	}
 
 	return response
+
 }
 
 // PrintTree print all routers

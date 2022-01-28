@@ -16,7 +16,6 @@ package web
 
 import (
 	"fmt"
-	"html/template"
 	"sync"
 	"time"
 
@@ -66,6 +65,7 @@ func (m *URLMap) AddStatistics(requestMethod, requestURL, requestController stri
 			}
 			m.urlmap[requestURL][requestMethod] = nb
 		}
+
 	} else {
 		if m.LengthLimit > 0 && m.LengthLimit <= len(m.urlmap) {
 			return
@@ -89,7 +89,7 @@ func (m *URLMap) GetMap() map[string]interface{} {
 	m.lock.RLock()
 	defer m.lock.RUnlock()
 
-	fields := []string{"requestUrl", "method", "times", "used", "max used", "min used", "avg used"}
+	var fields = []string{"请求地址", "方法", "次数", "共耗时", "最长耗时", "最小耗时", "平均耗时"}
 
 	var resultLists [][]string
 	content := make(map[string]interface{})
@@ -98,7 +98,7 @@ func (m *URLMap) GetMap() map[string]interface{} {
 	for k, v := range m.urlmap {
 		for kk, vv := range v {
 			result := []string{
-				fmt.Sprintf("% -50s", template.HTMLEscapeString(k)),
+				fmt.Sprintf("% -50s", k),
 				fmt.Sprintf("% -10s", kk),
 				fmt.Sprintf("% -16d", vv.RequestNum),
 				fmt.Sprintf("%d", vv.TotalTime),
