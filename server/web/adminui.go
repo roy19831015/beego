@@ -30,7 +30,7 @@ var loginTpl = `
 {{define "content"}}
 <h1>HBCACSMP服务器运行状况仪表板-登陆</h1>
 <p>
-<form class="login-form" novalidate url="/admin/login">
+<form class="login-form" novalidate method="post" url="/admin/login">
         <div class="input-content">
             <div style="margin-top: 16px">
                 <input type="password"
