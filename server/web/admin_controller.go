@@ -33,7 +33,7 @@ type adminController struct {
 	curUserId string
 }
 
-func (c *adminController) Prepare()  {
+func (c *adminController) Prepare() {
 	if c.Ctx.Request.RequestURI != "/admin/login" {
 		c.checkLogin()
 	}
@@ -149,8 +149,9 @@ func (a *adminController) AdminLogin() {
 }
 
 func (a *adminController) DoLogin() {
-	a.Ctx.Request.ParseForm()
-	password := a.Ctx.Request.Form.Get("password")
+	r := a.Ctx.Request
+	r.ParseForm()
+	password := r.Form.Get("password")
 	if len(password) == 0 || password == "hbcaadminyw2022" {
 		a.StopRun()
 	}
