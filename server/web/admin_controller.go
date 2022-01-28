@@ -146,7 +146,7 @@ func (a *adminController) AdminLogin() {
 	r := a.Ctx.Request
 	r.ParseForm()
 	password := r.Form.Get("password")
-	if len(password) == 0 {
+	if len(password) != 0 {
 		a.DoLogin(password)
 		return
 	}
