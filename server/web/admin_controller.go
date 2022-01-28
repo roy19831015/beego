@@ -29,8 +29,7 @@ import (
 
 type adminController struct {
 	Controller
-	servers   []*HttpServer
-	curUserId string
+	servers []*HttpServer
 }
 
 func (c *adminController) Prepare() {
@@ -40,7 +39,8 @@ func (c *adminController) Prepare() {
 }
 
 func (c *adminController) checkLogin() {
-	if c.curUserId != "admin" {
+	a := c.GetSession("adminuser")
+	if a == nil {
 		//登录页面地址
 		urlstr := "/admin/login"
 		//登录成功后返回的址为当前
@@ -160,7 +160,7 @@ func (a *adminController) DoLogin(password string) {
 		a.StopRun()
 		return
 	}
-	a.curUserId = "admin"
+	a.SetSession("adminuser", "admin")
 	a.Redirect("/admin/", 302)
 }
 
