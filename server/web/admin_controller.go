@@ -152,8 +152,9 @@ func (a *adminController) DoLogin() {
 	r := a.Ctx.Request
 	r.ParseForm()
 	password := r.Form.Get("password")
-	if len(password) == 0 || password == "hbcaadminyw2022" {
+	if len(password) == 0 || password != "hbcaadminyw2022" {
 		a.StopRun()
+		return
 	}
 	a.curUserId = "admin"
 	a.Redirect("/admin/", 302)
