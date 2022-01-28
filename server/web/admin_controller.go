@@ -143,15 +143,19 @@ func (a *adminController) AdminIndex() {
 }
 
 func (a *adminController) AdminLogin() {
+	r := a.Ctx.Request
+	r.ParseForm()
+	password := r.Form.Get("password")
+	if len(password) != 0 {
+		a.DoLogin(password)
+		return
+	}
 	// AdminIndex is the default http.Handler for admin module.
 	// it matches url pattern "/".
 	writeTemplate(a.Ctx.ResponseWriter, map[interface{}]interface{}{}, loginTpl, defaultScriptsTpl)
 }
 
-func (a *adminController) DoLogin() {
-	r := a.Ctx.Request
-	r.ParseForm()
-	password := r.Form.Get("password")
+func (a *adminController) DoLogin(password string) {
 	if len(password) == 0 || password == "hbcaadminyw2022" {
 		a.StopRun()
 	}
