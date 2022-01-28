@@ -34,7 +34,7 @@ type adminController struct {
 }
 
 func (c *adminController) Prepare() {
-	if c.Ctx.Request.URL.Path != "/admin/login" {
+	if c.Ctx.Request.URL.Path != "/admin/login" && c.Ctx.Request.URL.Path != "/admin/dologin" {
 		c.checkLogin()
 	}
 }
