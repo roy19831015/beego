@@ -34,7 +34,7 @@ type adminController struct {
 }
 
 func (c *adminController) Prepare() {
-	if c.Ctx.Request.URL.Path != "/admin/login" && c.Ctx.Request.URL.Path != "/admin/dologin" {
+	if c.Ctx.Request.URL.Path != "/admin/login" {
 		c.checkLogin()
 	}
 }
@@ -143,16 +143,20 @@ func (a *adminController) AdminIndex() {
 }
 
 func (a *adminController) AdminLogin() {
+	r := a.Ctx.Request
+	r.ParseForm()
+	password := r.Form.Get("password")
+	if len(password) == 0 {
+		a.DoLogin(password)
+		return
+	}
 	// AdminIndex is the default http.Handler for admin module.
 	// it matches url pattern "/".
 	writeTemplate(a.Ctx.ResponseWriter, map[interface{}]interface{}{}, loginTpl, defaultScriptsTpl)
 }
 
-func (a *adminController) DoLogin() {
-	r := a.Ctx.Request
-	r.ParseForm()
-	password := r.Form.Get("password")
-	if len(password) == 0 || password != "hbcaadminyw2022" {
+func (a *adminController) DoLogin(password string) {
+	if password != "hbcaadminyw2022" {
 		a.StopRun()
 		return
 	}
