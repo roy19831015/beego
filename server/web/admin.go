@@ -111,6 +111,7 @@ func registerAdmin() error {
 
 		// copy config to avoid conflict
 		adminCfg := *BConfig
+		adminCfg.WebConfig.EnableXSRF = true
 		beeAdminApp = &adminApp{
 			HttpServer: NewHttpServerWithCfg(&adminCfg),
 		}
